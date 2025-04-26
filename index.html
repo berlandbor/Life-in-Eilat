@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Комикс-фильтр</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <button id="toggleSidebar">☰</button>
+  <div id="canvasTitle">Комикс-фильтр к изображениям</div>
+
+  <div class="sidebar hidden" id="sidebar">
+    <h2>Комикс-фильтр</h2>
+    <p>by berlandbor</p>
+
+    <!-- Загрузка изображения -->
+    <input type="file" id="upload" accept="image/*"><hr>
+
+    <!-- Параметры изображения -->
+    <div class="section">
+      <h3>Изображение</h3>
+
+      <label>Постеризация:</label>
+      <div class="param-group">
+        <input type="range" id="poster" min="10" max="150" step="1" value="50">
+        <input type="number" id="posterInput" min="10" max="150" step="1" value="50">
+      </div>
+
+      <label>Насыщенность:</label>
+      <div class="param-group">
+        <input type="range" id="saturation" min="0" max="2" step="0.1" value="1.0">
+        <input type="number" id="saturationInput" min="0" max="2" step="0.1" value="1.0">
+      </div>
+
+      <label>Прозрачность картинки:</label>
+      <div class="param-group">
+        <input type="range" id="imageAlpha" min="0" max="255" value="255">
+        <input type="number" id="imageAlphaVal" min="0" max="255" value="255">
+      </div>
+    </div><hr>
+
+    <!-- Контуры -->
+    <div class="section">
+      <h3>Контуры</h3>
+
+      <label>Чувствительность:</label>
+      <div class="param-group">
+        <input type="range" id="edgeThreshold" min="1" max="50" value="25">
+        <input type="number" id="edgeInput" min="1" max="50" value="25">
+      </div>
+
+      <label>Цвет контура:</label>
+      <input type="color" id="edgeColor" value="#000000">
+
+      <label>Прозрачность:</label>
+      <div class="param-group">
+        <input type="range" id="edgeAlpha" min="0" max="255" value="255">
+        <input type="number" id="alphaVal" min="0" max="255" value="255">
+      </div>
+
+      <label><input type="checkbox" id="showEdges" checked> Показывать</label>
+      <label><input type="checkbox" id="onlyEdges"> Только контуры</label>
+
+      <div id="bgPicker" style="display:none;">
+        <label>Фон:</label>
+        <input type="color" id="bgColor" value="#ffffff">
+      </div>
+    </div><hr>
+
+    <!-- Фильтрация по цвету -->
+    <div class="section">
+      <h3>Фильтрация по цвету</h3>
+
+      <label>Цвет для фильтра:</label>
+      <input type="color" id="targetColor" value="#ff0000">
+
+      <label>Порог:</label>
+      <div class="param-group">
+        <input type="range" id="colorTolerance" min="0" max="255" value="50">
+        <input type="number" id="colorToleranceVal" min="0" max="255" value="50">
+      </div>
+
+      <label><input type="radio" name="colorMode" value="bw" checked> Только выбранный (остальное ч/б)</label>
+      <label><input type="radio" name="colorMode" value="transparent"> Только выбранный (остальное прозрачно)</label>
+      <label><input type="radio" name="colorMode" value="replace"> Заменить выбранный цвет</label>
+
+      <div id="replacementColorContainer" style="display:none;">
+        <label>Новый цвет:</label>
+        <input type="color" id="replacementColor" value="#00ff00">
+      </div>
+
+      <label><input type="checkbox" id="enableColorFilter"> Включить цветовую фильтрацию</label>
+    </div><hr>
+
+    <!-- Расширенная фильтрация по каналам -->
+    <div class="section">
+      <h3>Расширенная фильтрация по каналам</h3>
+
+      <label><input type="checkbox" id="enableChannelFilter"> Включить</label>
+
+      <label>Цвет канала:</label>
+      <select id="channelType">
+        <option value="red">Красный</option>
+        <option value="green">Зелёный</option>
+        <option value="blue">Синий</option>
+        <option value="yellow">Жёлтый</option>
+      </select>
+
+      <label>Порог:</label>
+      <div class="param-group">
+        <input type="range" id="channelTolerance" min="0" max="255" value="60">
+        <input type="number" id="channelToleranceVal" min="0" max="255" value="60">
+      </div>
+
+      <label><input type="radio" name="channelMode" value="bw" checked> Остальное в ч/б</label>
+      <label><input type="radio" name="channelMode" value="transparent"> Остальное прозрачно</label>
+      <label><input type="radio" name="channelMode" value="remove"> Удалить несоответствующие</label>
+    </div><hr>
+
+    <!-- Управление каналами -->
+    <div class="section">
+      <h3>Управление цветовыми каналами</h3>
+
+      <label><input type="checkbox" id="channelREnable" checked> Красный (R)</label>
+      <input type="color" id="channelRColor" value="#ff0000">
+      <input type="range" id="channelRStrength" min="-100" max="100" value="0">
+
+      <label><input type="checkbox" id="channelGEnable" checked> Зелёный (G)</label>
+      <input type="color" id="channelGColor" value="#00ff00">
+      <input type="range" id="channelGStrength" min="-100" max="100" value="0">
+
+      <label><input type="checkbox" id="channelBEnable" checked> Синий (B)</label>
+      <input type="color" id="channelBColor" value="#0000ff">
+      <input type="range" id="channelBStrength" min="-100" max="100" value="0">
+    </div><hr>
+
+    <!-- Отключение каналов по цвету -->
+    <div class="section">
+      <h3>Отключить каналы по выбранному цвету</h3>
+
+      <label><input type="checkbox" id="colorChannelToggle"> Включить</label>
+      <label>Цвет:</label>
+      <input type="color" id="channelColor" value="#ff0000">
+    </div><hr>
+
+    <!-- Дополнительно -->
+    <div class="section">
+      <h3>Дополнительно</h3>
+
+      <label>Масштаб:</label>
+      <div class="param-group">
+        <input type="range" id="zoom" min="0.2" max="3" step="0.1" value="1.0">
+        <input type="number" id="zoomVal" min="0.2" max="3" step="0.1" value="1.0">
+      </div>
+
+      <div style="margin-top: 10px;">
+        <button id="resetBtn">Сброс</button>
+        <button id="downloadBtn">Скачать</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Канвас -->
+  <canvas id="canvas"></canvas>
+
+  <!-- Скрипты -->
+  <script src="dom-elements.js"></script>
+  <script src="utils.js"></script>
+  <script src="filters.js"></script>
+  <script src="events.js"></script>
+  <script src="main.js"></script>
+  
+    
+</body>
+</html>
